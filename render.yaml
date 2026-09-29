@@ -3,7 +3,7 @@ services:
     name: zoom-clone-api
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    dockerContext: .
 
     healthCheckPath: /api/health
 
