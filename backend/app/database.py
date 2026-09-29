@@ -1,21 +1,16 @@
-from sqlalchemy import create_engine, event
+import os
+from pathlib import Path
+
+from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-from .config import settings
+DEFAULT_PATH = Path(__file__).resolve().parent.parent / "zoom.db"
+DB_PATH = Path(os.environ.get("ZOOM_DB_PATH", DEFAULT_PATH))
 
-connect_args = {"check_same_thread": False} if settings.DATABASE_URL.startswith("sqlite") else {}
-engine = create_engine(settings.DATABASE_URL, connect_args=connect_args)
-
-
-@event.listens_for(engine, "connect")
-def _enable_sqlite_fk(dbapi_conn, _):
-    """SQLite ignores foreign keys unless explicitly enabled per connection."""
-    if settings.DATABASE_URL.startswith("sqlite"):
-        cur = dbapi_conn.cursor()
-        cur.execute("PRAGMA foreign_keys=ON")
-        cur.close()
-
-
+engine = create_engine(
+    f"sqlite:///{DB_PATH}",
+    connect_args={"check_same_thread": False},
+)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 
@@ -29,3 +24,9 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def init_db() -> None:
+    from app import models  # noqa: F401
+
+    Base.metadata.create_all(bind=engine)
