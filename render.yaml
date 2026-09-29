@@ -2,9 +2,5 @@ services:
   - type: web
     name: zoom-clone-api
     runtime: docker
-    rootDir: backend
-    dockerfilePath: ./Dockerfile
-
-    
-
-   
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
