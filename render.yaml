@@ -4,3 +4,12 @@ services:
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
+
+    healthCheckPath: /api/health
+
+    envVars:
+      - key: FRONTEND_URL
+        value: https://your-app.vercel.app
+
+      - key: CORS_ORIGINS
+        value: https://your-app.vercel.app
